@@ -1,6 +1,7 @@
+// src/routes/contactRoutes.ts
 import { Router } from 'express';
 import { body } from 'express-validator';
-import { submitContactForm } from '../controllers/contactController.js';
+import { submitContactForm } from '../controllers/contactController.js'; // named export, .js for compiled TS
 
 const router = Router();
 
