@@ -1,7 +1,7 @@
-// src/routes/contactRoutes.ts
+
 import { Router } from 'express';
 import { body } from 'express-validator';
-import { submitContactForm } from '../controllers/contactController.js'; // named export, .js for compiled TS
+import { submitContactForm } from '../controllers/contactController.js';
 
 const router = Router();
 
@@ -38,3 +38,4 @@ const contactValidation = [
 router.post('/', contactValidation, submitContactForm);
 
 export default router;
+
