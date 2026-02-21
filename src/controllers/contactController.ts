@@ -1,5 +1,5 @@
 import type { Request, Response } from 'express';
-import { sendContactEmail } from '../services/emailService.js';
+import { sendContactEmail } from '../services/emailService';
 
 export const submitContactForm = async (req: Request, res: Response) => {
   try {
