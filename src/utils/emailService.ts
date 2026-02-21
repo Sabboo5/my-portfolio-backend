@@ -1,7 +1,7 @@
 import nodemailer from 'nodemailer';
 import type { Transporter } from 'nodemailer';
 import { config, isDevelopment } from '../config';
-import type { ContactFormData } from '../types/index.js';
+import type { ContactFormData } from '../types/index';
 
 let transporter: Transporter | null = null;
 
