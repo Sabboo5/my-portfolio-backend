@@ -17,10 +17,10 @@
     "nodemailer": "^6.10.1"
   },
   "devDependencies": {
-    "@types/cors": "^2.8.17",
-    "@types/express": "^4.17.21",
-    "@types/node": "^22.5.0",
-    "@types/nodemailer": "^6.4.15",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^4.17.25",
+    "@types/node": "^22.19.11",
+    "@types/nodemailer": "^6.4.23",
     "nodemon": "^3.1.14",
     "ts-node": "^10.9.2",
     "tsx": "^4.19.0",
