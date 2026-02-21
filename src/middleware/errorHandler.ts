@@ -1,5 +1,5 @@
 import type { Request, Response, NextFunction } from 'express';
-import { isDevelopment } from '../../config/index.js';
+import { isDevelopment } from '../config';
 import type { ApiResponse } from '../types/index.js';
 
 export class AppError extends Error {
