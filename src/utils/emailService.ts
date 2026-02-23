@@ -1,6 +1,6 @@
 import sgMail from '@sendgrid/mail';
 import type { ContactFormData } from '../types/index.js';
-import { config, isDevelopment } from '../config.js';
+import { config, isDevelopment } from '../config';
 
 // Set SendGrid API key once
 if (!config.sendgridApiKey || !config.email.contactEmail || !config.email.emailFrom) {
