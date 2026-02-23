@@ -5,6 +5,16 @@ import type { ContactFormData } from '../types/index.js';
 
 let transporter: Transporter | null = null;
 
+console.log('EMAIL CONFIG:', {
+  host: config.email.host,
+  port: config.email.port,
+  secure: config.email.secure,
+  user: config.email.user,
+  passExists: !!config.email.pass,
+  contactEmail: config.email.contactEmail,
+  isDevelopment,
+});
+
 export const initializeEmailService = (): void => {
   if (!config.email.user || !config.email.pass) {
     console.warn('⚠️ Email service not configured. Contact form will log messages to console.');
