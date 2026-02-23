@@ -13,7 +13,7 @@ exports.config = {
     email: {
         host: process.env.SMTP_HOST || 'smtp.gmail.com',
         port: parseInt(process.env.SMTP_PORT || '587', 10),
-        secure: process.env.SMTP_SECURE === 'true',
+        secure: process.env.SMTP_SECURE === 'false',
         user: process.env.SMTP_USER || '',
         pass: process.env.SMTP_PASS || '',
         contactEmail: process.env.CONTACT_EMAIL || '',
