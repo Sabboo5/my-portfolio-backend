@@ -1,53 +1,28 @@
-import nodemailer from 'nodemailer';
-import type { Transporter } from 'nodemailer';
+import sgMail from '@sendgrid/mail';
 import type { ContactFormData } from '../types/index.js';
 
-let transporter: Transporter | null = null;
+if (!process.env.SENDGRID_PASS || !process.env.CONTACT_EMAIL) {
+  console.warn('⚠️ SendGrid not configured. Contact form emails will log to console.');
+}
 
-// Initialize SendGrid transporter
-export const initializeEmailService = (): void => {
-  if (!process.env.SENDGRID_USER || !process.env.SENDGRID_PASS) {
-    console.warn('⚠️ Email service not configured. Contact form will log messages to console.');
-    return;
-  }
+sgMail.setApiKey(process.env.SENDGRID_PASS);
 
-  transporter = nodemailer.createTransport({
-    host: 'smtp.sendgrid.net',
-    port: 587,
-    secure: false, // TLS
-    auth: {
-      user: process.env.SENDGRID_USER,
-      pass: process.env.SENDGRID_PASS,
-    },
-  });
-
-  transporter.verify((error) => {
-    if (error) {
-      console.error('❌ Email service connection failed:', error.message);
-      transporter = null;
-    } else {
-      console.log('✅ Email service ready');
-    }
-  });
-};
-
-// Send contact form email
 export const sendContactEmail = async (data: ContactFormData): Promise<void> => {
   const { name, email, subject, message } = data;
 
-  if (!transporter) {
-    console.log('📧 Logging contact form to console because transporter is not ready.');
+  if (!process.env.SENDGRID_PASS || !process.env.CONTACT_EMAIL) {
+    console.log('📧 Logging contact form to console because SendGrid is not ready.');
     console.log(data);
     return;
   }
 
-  const mailOptions = {
-    from: `"Portfolio Contact" <${process.env.CONTACT_EMAIL}>`,
+  const msg = {
     to: process.env.CONTACT_EMAIL,
+    from: process.env.CONTACT_EMAIL,
     replyTo: email,
     subject: `Portfolio Contact: ${subject}`,
     text: `Name: ${name}\nEmail: ${email}\nSubject: ${subject}\nMessage:\n${message}`,
-    html: `<div>
+    html: `<div style="font-family: Arial, sans-serif; line-height: 1.6;">
              <h2>New Contact Form Submission</h2>
              <p><strong>Name:</strong> ${name}</p>
              <p><strong>Email:</strong> <a href="mailto:${email}">${email}</a></p>
@@ -57,5 +32,5 @@ export const sendContactEmail = async (data: ContactFormData): Promise<void> => 
            </div>`,
   };
 
-  await transporter.sendMail(mailOptions);
+  await sgMail.send(msg);
 };
