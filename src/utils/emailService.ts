@@ -5,33 +5,33 @@ import type { ContactFormData } from '../types/index.js';
 
 let transporter: Transporter | null = null;
 
+// Log email config for debugging
 console.log('EMAIL CONFIG:', {
-  host: config.email.host,
-  port: config.email.port,
-  secure: config.email.secure,
-  user: config.email.user,
-  passExists: !!config.email.pass,
-  contactEmail: config.email.contactEmail,
+  host: 'smtp.sendgrid.net',
+  port: 587,
+  secure: false,
+  user: process.env.SENDGRID_USER,
+  passExists: !!process.env.SENDGRID_PASS,
+  contactEmail: process.env.CONTACT_EMAIL,
   isDevelopment,
 });
 
 export const initializeEmailService = (): void => {
-  if (!config.email.user || !config.email.pass) {
+  if (!process.env.SENDGRID_PASS || !process.env.SENDGRID_USER) {
     console.warn('⚠️ Email service not configured. Contact form will log messages to console.');
     return;
   }
 
   transporter = nodemailer.createTransport({
-    host: config.email.host,
-    port: config.email.port,
-    secure: config.email.secure,
+    host: 'smtp.sendgrid.net',
+    port: 587,
+    secure: false, // false for TLS, port 587
     auth: {
-      user: config.email.user,
-      pass: config.email.pass,
+      user: process.env.SENDGRID_USER, // must be "apikey"
+      pass: process.env.SENDGRID_PASS, // your API key
     },
   });
 
-  // Verify connection
   transporter.verify((error) => {
     if (error) {
       console.error('❌ Email service connection failed:', error.message);
@@ -45,7 +45,6 @@ export const initializeEmailService = (): void => {
 export const sendContactEmail = async (data: ContactFormData): Promise<void> => {
   const { name, email, subject, message } = data;
 
-  // In development or if email is not configured, log to console
   if (!transporter) {
     console.log('\n📧 New Contact Form Submission:');
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
@@ -57,55 +56,20 @@ export const sendContactEmail = async (data: ContactFormData): Promise<void> => 
   }
 
   const mailOptions = {
-    from: `"Portfolio Contact" <${config.email.user}>`,
-    to: config.email.contactEmail,
+    from: `"Portfolio Contact" <${process.env.CONTACT_EMAIL}>`,
+    to: process.env.CONTACT_EMAIL,
     replyTo: email,
     subject: `Portfolio Contact: ${subject}`,
-    text: `
-Name: ${name}
-Email: ${email}
-Subject: ${subject}
-
-Message:
-${message}
-    `,
+    text: `Name: ${name}\nEmail: ${email}\nSubject: ${subject}\nMessage:\n${message}`,
     html: `
-<!DOCTYPE html>
-<html>
-<head>
-  <style>
-    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-    .header { background: linear-gradient(135deg, #0ea5e9, #06b6d4); color: white; padding: 20px; border-radius: 8px 8px 0 0; }
-    .content { background: #f8f9fa; padding: 20px; border-radius: 0 0 8px 8px; }
-    .field { margin-bottom: 15px; }
-    .label { font-weight: bold; color: #555; }
-    .message-box { background: white; padding: 15px; border-radius: 4px; border-left: 4px solid #0ea5e9; }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <div class="header">
-      <h2>New Contact Form Submission</h2>
-    </div>
-    <div class="content">
-      <div class="field">
-        <span class="label">Name:</span> ${name}
+      <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+        <h2>New Contact Form Submission</h2>
+        <p><strong>Name:</strong> ${name}</p>
+        <p><strong>Email:</strong> <a href="mailto:${email}">${email}</a></p>
+        <p><strong>Subject:</strong> ${subject}</p>
+        <p><strong>Message:</strong></p>
+        <div style="background: #f8f8f8; padding: 10px; border-left: 4px solid #0ea5e9;">${message.replace(/\n/g, '<br>')}</div>
       </div>
-      <div class="field">
-        <span class="label">Email:</span> <a href="mailto:${email}">${email}</a>
-      </div>
-      <div class="field">
-        <span class="label">Subject:</span> ${subject}
-      </div>
-      <div class="field">
-        <span class="label">Message:</span>
-        <div class="message-box">${message.replace(/\n/g, '<br>')}</div>
-      </div>
-    </div>
-  </div>
-</body>
-</html>
     `,
   };
 
