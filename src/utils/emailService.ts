@@ -4,15 +4,6 @@ import type { ContactFormData } from '../types/index.js';
 
 let transporter: Transporter | null = null;
 
-console.log('EMAIL CONFIG:', {
-  host: 'smtp.sendgrid.net',
-  port: 587,
-  secure: false,
-  user: process.env.SENDGRID_USER,
-  passExists: !!process.env.SENDGRID_PASS,
-  contactEmail: process.env.CONTACT_EMAIL,
-});
-
 // Initialize SendGrid transporter
 export const initializeEmailService = (): void => {
   if (!process.env.SENDGRID_USER || !process.env.SENDGRID_PASS) {
@@ -25,8 +16,8 @@ export const initializeEmailService = (): void => {
     port: 587,
     secure: false, // TLS
     auth: {
-      user: process.env.SENDGRID_USER, // must be "apikey"
-      pass: process.env.SENDGRID_PASS, // your API key
+      user: process.env.SENDGRID_USER,
+      pass: process.env.SENDGRID_PASS,
     },
   });
 
@@ -45,12 +36,8 @@ export const sendContactEmail = async (data: ContactFormData): Promise<void> => 
   const { name, email, subject, message } = data;
 
   if (!transporter) {
-    console.log('\n📧 New Contact Form Submission:');
-    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-    console.log(`From: ${name} <${email}>`);
-    console.log(`Subject: ${subject}`);
-    console.log(`Message:\n${message}`);
-    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
+    console.log('📧 Logging contact form to console because transporter is not ready.');
+    console.log(data);
     return;
   }
 
@@ -60,18 +47,14 @@ export const sendContactEmail = async (data: ContactFormData): Promise<void> => 
     replyTo: email,
     subject: `Portfolio Contact: ${subject}`,
     text: `Name: ${name}\nEmail: ${email}\nSubject: ${subject}\nMessage:\n${message}`,
-    html: `
-      <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
-        <h2>New Contact Form Submission</h2>
-        <p><strong>Name:</strong> ${name}</p>
-        <p><strong>Email:</strong> <a href="mailto:${email}">${email}</a></p>
-        <p><strong>Subject:</strong> ${subject}</p>
-        <p><strong>Message:</strong></p>
-        <div style="background: #f8f8f8; padding: 10px; border-left: 4px solid #0ea5e9;">
-          ${message.replace(/\n/g, '<br>')}
-        </div>
-      </div>
-    `,
+    html: `<div>
+             <h2>New Contact Form Submission</h2>
+             <p><strong>Name:</strong> ${name}</p>
+             <p><strong>Email:</strong> <a href="mailto:${email}">${email}</a></p>
+             <p><strong>Subject:</strong> ${subject}</p>
+             <p><strong>Message:</strong></p>
+             <div>${message.replace(/\n/g,'<br>')}</div>
+           </div>`,
   };
 
   await transporter.sendMail(mailOptions);
