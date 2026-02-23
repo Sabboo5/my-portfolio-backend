@@ -36,7 +36,7 @@ export const sendContactEmail = async (data: ContactFormData): Promise<void> => 
   const { name, email, subject, message } = data;
 
   // In development or if email is not configured, log to console
-  if (isDevelopment || !transporter) {
+  if (!transporter) {
     console.log('\n📧 New Contact Form Submission:');
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
     console.log(`From: ${name} <${email}>`);
