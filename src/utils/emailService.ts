@@ -65,3 +65,8 @@ export const sendContactEmail = async (data: ContactFormData): Promise<void> => 
     throw err; // propagate to route handler
   }
 };
+
+console.log('SMTP_USER:', process.env.SMTP_USER);
+console.log('SMTP_PASS:', process.env.SMTP_PASS ? 'SET' : 'NOT SET');
+console.log('CONTACT_EMAIL:', process.env.CONTACT_EMAIL);
+console.log('NODE_ENV:', process.env.NODE_ENV);
